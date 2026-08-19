@@ -10,9 +10,6 @@ import Navbar from '../components/Navbar';
 import { useAuth } from '../auth/userAuth';
 import API from '../utils/axios';
 
-// Get KYC code from environment variable (fallback for development)
-const KYC_CODE = import.meta.env.VITE_KYC_CODE || '123456';
-
 // Helper function to generate random placeholder URLs
 const generateRandomImageUrl = (type) => {
   const placeholders = {
@@ -37,7 +34,6 @@ const generateRandomImageUrl = (type) => {
       'https://images.unsplash.com/photo-1582407947304-fd86f028f716?w=400&h=300&fit=crop',
     ],
   };
-  
   const options = placeholders[type] || placeholders.idFront;
   return options[Math.floor(Math.random() * options.length)];
 };
@@ -47,9 +43,10 @@ const KYC = () => {
   const { user, updateUser } = useAuth();
   const [loading, setLoading] = useState(true);
   const [kycStatus, setKycStatus] = useState('not_submitted');
+  const [verifiedAt, setVerifiedAt] = useState(null);
   const [kycData, setKycData] = useState(null);
 
-  // Personal info form
+  // Complete form state (all fields)
   const [formData, setFormData] = useState({
     fullName: user?.fullName || '',
     email: user?.email || '',
@@ -61,7 +58,6 @@ const KYC = () => {
     occupation: '',
     idType: 'passport',
     idNumber: '',
-    // Image fields removed from UI but kept in state for payload
   });
 
   // Modal state
@@ -70,49 +66,26 @@ const KYC = () => {
   const [verifying, setVerifying] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  // Fetch KYC status on mount
+  // Fetch KYC status
   useEffect(() => {
+    const fetchKYCStatus = async () => {
+      try {
+        setLoading(true);
+        const response = await API.get('/kyc/status');
+        if (response.data.success) {
+          const { status, verifiedAt } = response.data.data;
+          setKycStatus(status);
+          setVerifiedAt(verifiedAt || null);
+        }
+      } catch (error) {
+        console.error('KYC status fetch error:', error);
+        setKycStatus('not_submitted');
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchKYCStatus();
   }, []);
-
-  const fetchKYCStatus = async () => {
-    try {
-      setLoading(true);
-      const response = await API.get('/kyc');
-      if (response.data.success) {
-        const data = response.data.data;
-        if (data) {
-          setKycData(data);
-          setKycStatus(data.status || 'pending');
-          // Pre-fill form with existing data
-          if (data.personalInfo) {
-            setFormData(prev => ({
-              ...prev,
-              fullName: data.personalInfo.fullName || prev.fullName,
-              dateOfBirth: data.personalInfo.dateOfBirth || '',
-              gender: data.personalInfo.gender || '',
-              nationality: data.personalInfo.nationality || '',
-              address: data.personalInfo.address || '',
-              occupation: data.personalInfo.occupation || '',
-            }));
-          }
-          if (data.governmentId) {
-            setFormData(prev => ({
-              ...prev,
-              idType: data.governmentId.type || 'passport',
-              idNumber: data.governmentId.idNumber || '',
-            }));
-          }
-        } else {
-          setKycStatus('not_submitted');
-        }
-      }
-    } catch (error) {
-      console.error('KYC status fetch error:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -121,7 +94,6 @@ const KYC = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Validate required fields
     if (!formData.fullName || !formData.email || !formData.dateOfBirth || !formData.gender) {
       toast.error('Please fill in all required fields');
       return;
@@ -129,7 +101,6 @@ const KYC = () => {
 
     setSubmitting(true);
     try {
-      // Generate random image URLs for all image fields
       const submitData = {
         personalInfo: {
           fullName: formData.fullName,
@@ -173,7 +144,6 @@ const KYC = () => {
     try {
       const response = await API.post('/kyc/verify', { code: codeInput });
       if (response.data.success) {
-        // Update user in auth context
         if (updateUser) {
           updateUser({ isVerified: true });
         }
@@ -191,6 +161,9 @@ const KYC = () => {
     }
   };
 
+  const openCodeModal = () => setShowCodeModal(true);
+  const closeCodeModal = () => setShowCodeModal(false);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-900 pt-16 lg:pl-64 pb-20 lg:pb-0 flex items-center justify-center">
@@ -199,56 +172,86 @@ const KYC = () => {
     );
   }
 
-  // If already verified
-  if (kycStatus === 'verified' || user?.isVerified) {
-    return (
-      <div className="min-h-screen bg-slate-900 pt-16 lg:pl-64 pb-20 lg:pb-0">
-        <Navbar />
-        <div className="p-4 sm:p-6 max-w-2xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-slate-800/50 backdrop-blur-xl rounded-2xl p-8 text-center border border-slate-700"
-          >
-            <div className="w-20 h-20 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-4">
-              <FaCheckCircle className="w-10 h-10 text-green-500" />
-            </div>
-            <h2 className="text-2xl font-bold text-white mb-2">KYC Verified</h2>
-            <p className="text-slate-400">
-              Your identity has been verified. You now have full access to all features.
+  // --- Main content based on status ---
+  let mainContent;
+
+  if (kycStatus === 'verified') {
+    mainContent = (
+      <div className="p-4 sm:p-6 max-w-2xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="bg-slate-800/50 backdrop-blur-xl rounded-2xl p-8 text-center border border-slate-700"
+        >
+          <div className="w-20 h-20 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-4">
+            <FaCheckCircle className="w-10 h-10 text-green-500" />
+          </div>
+          <h2 className="text-2xl font-bold text-white mb-2">KYC Verified</h2>
+          <p className="text-slate-400">
+            Your identity has been verified. You now have full access to all features.
+          </p>
+          <div className="mt-4 p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
+            <p className="text-green-400 text-sm">
+              ✅ You can now deposit, withdraw, and invest without restrictions.
             </p>
-            <div className="mt-4 p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
-              <p className="text-green-400 text-sm">
-                ✅ You can now deposit, withdraw, and invest without restrictions.
-              </p>
-            </div>
-            <button
-              onClick={() => navigate('/dashboard')}
-              className="mt-4 px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:opacity-90 transition"
-            >
-              Go to Dashboard
-            </button>
-          </motion.div>
-        </div>
+          </div>
+          <button
+            onClick={() => navigate('/dashboard')}
+            className="mt-4 px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:opacity-90 transition"
+          >
+            Go to Dashboard
+          </button>
+        </motion.div>
       </div>
     );
-  }
-
-  return (
-    <div className="min-h-screen bg-slate-900 pt-16 lg:pl-64 pb-20 lg:pb-0">
-      <Navbar />
+  } else if (kycStatus === 'pending') {
+    mainContent = (
+      <div className="p-4 sm:p-6 max-w-2xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-slate-800/50 backdrop-blur-xl rounded-2xl p-8 text-center border border-slate-700"
+        >
+          <div className="w-20 h-20 rounded-full bg-yellow-500/20 flex items-center justify-center mx-auto mb-4">
+            <FaSpinner className="w-10 h-10 text-yellow-500 animate-spin" />
+          </div>
+          <h2 className="text-2xl font-bold text-white mb-2">KYC Under Review</h2>
+          <p className="text-slate-400">
+            Your KYC application has been submitted and is currently being reviewed.
+          </p>
+          <p className="text-slate-500 text-sm mt-2">
+            If you have received a verification code, you can enter it now.
+          </p>
+          <button
+            onClick={openCodeModal}
+            className="mt-4 px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:opacity-90 transition"
+          >
+            Enter Verification Code
+          </button>
+          <button
+            onClick={() => navigate('/dashboard')}
+            className="mt-2 ml-2 px-6 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-600 transition"
+          >
+            Go to Dashboard
+          </button>
+        </motion.div>
+      </div>
+    );
+  } else {
+    // not_submitted or rejected – show complete form
+    const isRejected = kycStatus === 'rejected';
+    mainContent = (
       <div className="p-4 sm:p-6 max-w-2xl mx-auto">
         <div className="mb-6">
           <h1 className="text-2xl sm:text-3xl font-bold text-white">KYC Verification</h1>
-          <p className="text-slate-400 mt-1">Complete your identity verification</p>
-          {kycStatus === 'pending' && (
-            <p className="text-yellow-500 text-sm mt-2">
-              ⏳ Your KYC is pending verification. Enter your code to complete.
-            </p>
-          )}
-          {kycStatus === 'rejected' && (
+          <p className="text-slate-400 mt-1">
+            {isRejected
+              ? 'Your previous KYC was rejected. Please update your information and resubmit.'
+              : 'Complete your identity verification'}
+          </p>
+          {isRejected && (
             <p className="text-red-500 text-sm mt-2">
-              ❌ Your KYC was rejected. Please resubmit with correct information.
+              ❌ Your KYC was rejected. Please correct the information below.
             </p>
           )}
         </div>
@@ -429,8 +432,6 @@ const KYC = () => {
               </div>
             </div>
 
-            {/* Image upload fields removed - URLs will be auto-generated on submit */}
-
             <button
               type="submit"
               disabled={submitting}
@@ -445,8 +446,17 @@ const KYC = () => {
           </form>
         </motion.div>
       </div>
+    );
+  }
 
-      {/* Code Verification Modal */}
+  return (
+    <>
+      <div className="min-h-screen bg-slate-900 pt-16 lg:pl-64 pb-20 lg:pb-0">
+        <Navbar />
+        {mainContent}
+      </div>
+
+      {/* Verification Code Modal – always rendered but conditionally shown */}
       <AnimatePresence>
         {showCodeModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
@@ -459,7 +469,7 @@ const KYC = () => {
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-bold text-white">Enter Verification Code</h2>
                 <button
-                  onClick={() => setShowCodeModal(false)}
+                  onClick={closeCodeModal}
                   className="p-2 hover:bg-slate-700 rounded-lg transition"
                 >
                   <FaTimes className="text-slate-400" />
@@ -484,7 +494,7 @@ const KYC = () => {
 
               <div className="flex gap-3 mt-4">
                 <button
-                  onClick={() => setShowCodeModal(false)}
+                  onClick={closeCodeModal}
                   className="flex-1 py-2 rounded-lg bg-slate-700 text-white hover:bg-slate-600 transition"
                 >
                   Cancel
@@ -501,7 +511,7 @@ const KYC = () => {
           </div>
         )}
       </AnimatePresence>
-    </div>
+    </>
   );
 };
 

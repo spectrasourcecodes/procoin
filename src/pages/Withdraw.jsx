@@ -9,11 +9,9 @@ import { useAuth } from '../auth/userAuth';
 import { getCurrencySymbol } from '../utils/currency';
 import API from '../utils/axios';
 
-// ✅ HARDCODED WITHDRAWAL SETTINGS
+// ✅ HARDCODED WITHDRAWAL SETTINGS – limit removed
 const WITHDRAWAL_SETTINGS = {
-  popupEnabled: true,      // true = show popup, false = allow withdrawal
-  limitEnabled: true,      // true = enforce limit, false = no limit
-  maxLimit: 10,          // Maximum withdrawal amount
+  popupEnabled: false,      // true = show popup, false = allow withdrawal
   popupTitle: 'Withdrawal Restricted',
   popupMessage: 'Withdrawal is currently restricted. Please contact support for assistance.',
 };
@@ -27,19 +25,15 @@ const Withdraw = () => {
   const [loading, setLoading] = useState(false);
   const [walletBalance, setWalletBalance] = useState(0);
   const [showLimitModal, setShowLimitModal] = useState(false);
-  const [isKycVerified, setIsKycVerified] = useState(false);
-  const [kycStatus, setKycStatus] = useState('checking');
+  const [kycStatus, setKycStatus] = useState('checking'); // 'checking', 'pending', 'verified', 'rejected'
 
-  // ✅ Get currency symbol
   const currencySymbol = getCurrencySymbol(user?.currency);
 
-  // ✅ Check KYC status
   useEffect(() => {
     const checkKYC = async () => {
       try {
         const response = await API.get('/kyc/status');
         if (response.data.success) {
-          setIsKycVerified(response.data.data.isVerified);
           setKycStatus(response.data.data.status);
         }
       } catch (error) {
@@ -80,24 +74,19 @@ const Withdraw = () => {
       return;
     }
 
-    // ✅ Check KYC verification
-    if (!isKycVerified) {
-      toast.error('KYC verification required. Please complete KYC to withdraw.');
+    // ✅ KYC check – only verified users can withdraw
+    if (kycStatus !== 'verified') {
+      toast.error('KYC verification required. Please complete your KYC to withdraw.');
       return;
     }
 
-    // ✅ Check if withdrawal popup is enabled (HARDCODED)
+    // ✅ Popup check (if enabled, show modal and abort)
     if (WITHDRAWAL_SETTINGS.popupEnabled) {
       setShowLimitModal(true);
       return;
     }
 
-    // ✅ Check if withdrawal limit is enabled (HARDCODED)
-    if (WITHDRAWAL_SETTINGS.limitEnabled && amountNum > WITHDRAWAL_SETTINGS.maxLimit) {
-      toast.error(`Withdrawal limit is ${WITHDRAWAL_SETTINGS.maxLimit}. Please enter a lower amount.`);
-      return;
-    }
-
+    // ✅ Balance check
     if (amountNum > walletBalance) {
       toast.error('Insufficient balance');
       return;
@@ -141,10 +130,11 @@ const Withdraw = () => {
     return `${currencySymbol}${value?.toLocaleString() || '0.00'}`;
   };
 
-  // ✅ Handle modal close (just closes, doesn't submit)
   const handleModalClose = () => {
     setShowLimitModal(false);
   };
+
+  const isKycVerified = kycStatus === 'verified';
 
   return (
     <div className="min-h-screen bg-slate-900 pt-16 lg:pl-64 pb-20 lg:pb-0">
@@ -167,33 +157,23 @@ const Withdraw = () => {
             </div>
           </div>
 
-          {/* ✅ KYC Status Warning */}
+          {/* KYC Status Warning */}
           {!isKycVerified && (
             <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg flex items-center gap-3">
               <FaLock className="text-red-500 text-sm" />
               <p className="text-red-400 text-sm">
-                KYC verification required to withdraw. Please complete your KYC first.
+                {kycStatus === 'pending'
+                  ? 'Your KYC is pending approval. Please wait for verification.'
+                  : 'KYC verification required to withdraw. Please complete your KYC first.'}
               </p>
             </div>
           )}
 
-          {/* ✅ Withdrawal Limit Warning (HARDCODED) */}
-          {WITHDRAWAL_SETTINGS.limitEnabled && isKycVerified && !WITHDRAWAL_SETTINGS.popupEnabled && (
-            <div className="mb-4 p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg flex items-center gap-3">
-              <FaInfoCircle className="text-yellow-500 text-sm" />
-              <p className="text-yellow-400 text-sm">
-                Maximum withdrawal limit: {formatCurrency(WITHDRAWAL_SETTINGS.maxLimit)}
-              </p>
-            </div>
-          )}
-
-          {/* ✅ Popup Enabled Warning (HARDCODED) */}
+          {/* Popup Warning (only when popup is enabled and KYC verified) */}
           {WITHDRAWAL_SETTINGS.popupEnabled && isKycVerified && (
             <div className="mb-4 p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg flex items-center gap-3">
               <FaInfoCircle className="text-blue-500 text-sm" />
-              <p className="text-blue-400 text-sm">
-                {WITHDRAWAL_SETTINGS.popupMessage}
-              </p>
+              <p className="text-blue-400 text-sm">{WITHDRAWAL_SETTINGS.popupMessage}</p>
             </div>
           )}
 
@@ -207,8 +187,8 @@ const Withdraw = () => {
                     type="button"
                     onClick={() => setCrypto(c.id)}
                     className={`p-3 rounded-lg border transition ${
-                      crypto === c.id 
-                        ? 'border-blue-500 bg-blue-500/10' 
+                      crypto === c.id
+                        ? 'border-blue-500 bg-blue-500/10'
                         : 'border-slate-700 hover:border-slate-500'
                     }`}
                   >
@@ -265,7 +245,7 @@ const Withdraw = () => {
         </motion.div>
       </div>
 
-      {/* ✅ Withdrawal Popup Modal (HARDCODED) */}
+      {/* Withdrawal Popup Modal */}
       <AnimatePresence>
         {showLimitModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
@@ -279,14 +259,9 @@ const Withdraw = () => {
               <div className="flex justify-between items-center px-6 py-4 bg-gradient-to-r from-blue-600/20 to-purple-600/20 border-b border-slate-700">
                 <div className="flex items-center gap-3">
                   <FaLock className="text-blue-500 text-xl" />
-                  <h2 className="text-xl font-bold text-white">
-                    {WITHDRAWAL_SETTINGS.popupTitle}
-                  </h2>
+                  <h2 className="text-xl font-bold text-white">{WITHDRAWAL_SETTINGS.popupTitle}</h2>
                 </div>
-                <button
-                  onClick={handleModalClose}
-                  className="p-2 hover:bg-slate-700 rounded-lg transition"
-                >
+                <button onClick={handleModalClose} className="p-2 hover:bg-slate-700 rounded-lg transition">
                   <FaTimes className="text-slate-400" />
                 </button>
               </div>
@@ -294,18 +269,8 @@ const Withdraw = () => {
               <div className="p-6 space-y-4">
                 <div className="flex items-start gap-3 p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg">
                   <FaInfoCircle className="text-blue-500 text-lg mt-0.5 flex-shrink-0" />
-                  <p className="text-slate-200 text-sm leading-relaxed">
-                    {WITHDRAWAL_SETTINGS.popupMessage}
-                  </p>
+                  <p className="text-slate-200 text-sm leading-relaxed">{WITHDRAWAL_SETTINGS.popupMessage}</p>
                 </div>
-
-                {WITHDRAWAL_SETTINGS.limitEnabled && (
-                  <div className="mt-2 p-3 bg-slate-700/30 rounded-lg border border-slate-600">
-                    <p className="text-slate-400 text-xs text-center">
-                      💡 Maximum withdrawal limit: {formatCurrency(WITHDRAWAL_SETTINGS.maxLimit)}
-                    </p>
-                  </div>
-                )}
               </div>
 
               <div className="px-6 py-4 border-t border-slate-700 flex flex-col gap-3">
