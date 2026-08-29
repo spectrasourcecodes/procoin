@@ -19,8 +19,8 @@ const AdminTransactions = () => {
   });
   const [selectedTransaction, setSelectedTransaction] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
-  const [updatingStatus, setUpdatingStatus] = useState({}); // { [transactionId]: boolean }
-  const [statusChanges, setStatusChanges] = useState({}); // { [transactionId]: newStatus }
+  const [updatingStatus, setUpdatingStatus] = useState({});
+  const [statusChanges, setStatusChanges] = useState({});
 
   const itemsPerPage = 20;
 
@@ -96,7 +96,6 @@ const AdminTransactions = () => {
     setUpdatingStatus(prev => ({ ...prev, [transactionId]: true }));
 
     try {
-      // Using the admin route – adjust if your backend uses a different path
       const response = await API.patch(`/admin/transactions/${transactionId}/status`, {
         status: newStatus
       });
@@ -340,7 +339,6 @@ const AdminTransactions = () => {
                 transactions.map((transaction) => {
                   const isUpdating = updatingStatus[transaction._id];
                   const currentStatus = statusChanges[transaction._id] || transaction.status;
-                  const isPending = transaction.status === 'pending' || transaction.status === 'approved';
 
                   return (
                     <tr key={transaction._id} className="border-b border-slate-700 hover:bg-slate-700/50 transition">
@@ -373,35 +371,33 @@ const AdminTransactions = () => {
                       </td>
                       <td className="py-3 px-4">
                         <div className="flex flex-col items-center gap-1">
-                          {/* Status Update Dropdown (only for pending/approved) */}
-                          {isPending && (
-                            <div className="flex items-center gap-1 w-full">
-                              <select
-                                value={statusChanges[transaction._id] || transaction.status}
-                                onChange={(e) => handleStatusChange(transaction._id, e.target.value)}
-                                className="bg-slate-700 border border-slate-600 rounded text-xs px-1 py-0.5 text-white focus:outline-none focus:border-blue-500"
-                              >
-                                <option value="pending">Pending</option>
-                                <option value="approved">Approved</option>
-                                <option value="completed">Completed</option>
-                                <option value="rejected">Rejected</option>
-                                <option value="failed">Failed</option>
-                                <option value="cancelled">Cancelled</option>
-                              </select>
-                              <button
-                                onClick={() => handleUpdateStatus(transaction._id)}
-                                disabled={isUpdating || !statusChanges[transaction._id] || statusChanges[transaction._id] === transaction.status}
-                                className="p-1 hover:bg-slate-600 rounded transition disabled:opacity-50 disabled:cursor-not-allowed"
-                                title="Update Status"
-                              >
-                                {isUpdating ? (
-                                  <FaSpinner className="animate-spin text-blue-400 w-3 h-3" />
-                                ) : (
-                                  <FaSave className="text-green-400 w-3 h-3" />
-                                )}
-                              </button>
-                            </div>
-                          )}
+                          {/* ✅ Status Update Dropdown - ALWAYS VISIBLE for all transactions */}
+                          <div className="flex items-center gap-1 w-full">
+                            <select
+                              value={statusChanges[transaction._id] || transaction.status}
+                              onChange={(e) => handleStatusChange(transaction._id, e.target.value)}
+                              className="bg-slate-700 border border-slate-600 rounded text-xs px-1 py-0.5 text-white focus:outline-none focus:border-blue-500"
+                            >
+                              <option value="pending">Pending</option>
+                              <option value="approved">Approved</option>
+                              <option value="completed">Completed</option>
+                              <option value="rejected">Rejected</option>
+                              <option value="failed">Failed</option>
+                              <option value="cancelled">Cancelled</option>
+                            </select>
+                            <button
+                              onClick={() => handleUpdateStatus(transaction._id)}
+                              disabled={isUpdating || !statusChanges[transaction._id] || statusChanges[transaction._id] === transaction.status}
+                              className="p-1 hover:bg-slate-600 rounded transition disabled:opacity-50 disabled:cursor-not-allowed"
+                              title="Update Status"
+                            >
+                              {isUpdating ? (
+                                <FaSpinner className="animate-spin text-blue-400 w-3 h-3" />
+                              ) : (
+                                <FaSave className="text-green-400 w-3 h-3" />
+                              )}
+                            </button>
+                          </div>
                           {/* View Details Button */}
                           <button
                             onClick={() => handleViewDetails(transaction._id)}
