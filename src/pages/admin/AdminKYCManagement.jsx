@@ -16,7 +16,7 @@ import {
   FaExclamationTriangle,
 } from "react-icons/fa";
 import toast from "react-hot-toast";
-import { adminKycService } from "../services/adminKycService";
+import { adminKycService } from "../../services/adminKycService";
 
 const AdminKYCManagement = () => {
   const [submissions, setSubmissions] = useState([]);
