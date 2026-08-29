@@ -33,8 +33,7 @@ import AdminInvestmentPlans from './pages/admin/AdminInvestmentPlans';
 import WalletManagement from './pages/admin/WalletManagement';
 import PaymentProofs from './pages/admin/PaymentProofs';
 import AdminWallets from './pages/admin/AdminWallets';
-// Inside your admin routes configuration
-import AdminKYCManagement from "../pages/AdminKYCManagement";
+import AdminKYCManagement from './pages/admin/AdminKYCManagement';
 
 
 // Protected route components
