@@ -7,7 +7,7 @@ export const adminKycService = {
    */
   getSubmissions: async (params = {}) => {
     try {
-      const response = await API.get("/admin/kyc/submissions", { params });
+      const response = await API.get("/kyc/submissions", { params });
       return response.data;
     } catch (error) {
       console.error("Error fetching KYC submissions:", error.message);
@@ -20,7 +20,7 @@ export const adminKycService = {
    */
   getSubmission: async (id) => {
     try {
-      const response = await API.get(`/admin/kyc/${id}`);
+      const response = await API.get(`/kyc/${id}`);
       return response.data;
     } catch (error) {
       console.error("Error fetching KYC submission:", error.message);
@@ -33,7 +33,7 @@ export const adminKycService = {
    */
   approveKYC: async (id) => {
     try {
-      const response = await API.post(`/admin/kyc/${id}/approve`);
+      const response = await API.post(`/kyc/${id}/approve`);
       return response.data;
     } catch (error) {
       console.error("Error approving KYC:", error.message);
@@ -46,7 +46,7 @@ export const adminKycService = {
    */
   rejectKYC: async (id, reason) => {
     try {
-      const response = await API.post(`/admin/kyc/${id}/reject`, { reason });
+      const response = await API.post(`/kyc/${id}/reject`, { reason });
       return response.data;
     } catch (error) {
       console.error("Error rejecting KYC:", error.message);
@@ -59,7 +59,7 @@ export const adminKycService = {
    */
   getUserKYCStatus: async (userId) => {
     try {
-      const response = await API.get(`/admin/kyc/user/${userId}/status`);
+      const response = await API.get(`/kyc/user/${userId}/status`);
       return response.data;
     } catch (error) {
       console.error("Error fetching user KYC status:", error.message);
