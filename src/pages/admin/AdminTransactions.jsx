@@ -97,7 +97,7 @@ const AdminTransactions = () => {
 
     try {
       // Using the admin route – adjust if your backend uses a different path
-      const response = await API.patch(`/admin/transactions/${transactionId}/status`, {
+      const response = await API.patch(`/transactions/${transactionId}/status`, {
         status: newStatus
       });
 
