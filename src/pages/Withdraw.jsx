@@ -18,7 +18,7 @@ const WITHDRAWAL_SETTINGS = {
 
 // ✅ WITHDRAWAL LIMIT CONSTANTS
 const MIN_WITHDRAWAL = 100;
-const ACCOUNT_LIMIT = 10;
+const ACCOUNT_LIMIT = 5;
 
 const Withdraw = () => {
   const navigate = useNavigate();
