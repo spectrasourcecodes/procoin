@@ -15,6 +15,10 @@ import {
   FaChargingStation,
   FaBars,
   FaTimes,
+  FaGift,
+  FaTrophy,
+  FaCoins,
+  FaCarSide,
 } from 'react-icons/fa';
 import GoogleTranslate from '../components/GoogleTranslate';
 import {
@@ -36,15 +40,17 @@ const Preloader = () => <LoadingScreen />;
 /* ------------------------------------------------------------------ */
 const IMAGES = {
   heroVehicle:
-    'images/Teslacar.jfif',
+    'https://images.unsplash.com/photo-1560958089-b8a1929cea89?auto=format&fit=crop&w=1600&q=80',
   cybertruck:
-    'images/Cybertruck.jfif',
+    'https://images.unsplash.com/photo-1620891549027-942fdc95d3f5?auto=format&fit=crop&w=1000&q=80',
   charging:
-    'images/Electric Vehicles.jfif',
+    'https://images.unsplash.com/photo-1617886322168-72b886573cce?auto=format&fit=crop&w=1000&q=80',
   robotics:
-    'images/Supercharging.jfif',
+    'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=1000&q=80',
+  // Replace with a properly licensed portrait (e.g. a Creative Commons
+  // image from Wikimedia Commons) before going live.
   elonMusk:
-    'images/ElonMusk2.jfif',
+    'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=1000&q=80',
 };
 
 /* ------------------------------------------------------------------ */
@@ -320,6 +326,163 @@ const Hero = () => (
             </div>
           </div>
         </motion.div>
+      </div>
+    </div>
+  </section>
+);
+
+/* ------------------------------------------------------------------ */
+/*  Tesla Rewards Programme                                            */
+/* ------------------------------------------------------------------ */
+const rewardTiers = [
+  {
+    icon: FaCarSide,
+    title: 'Discounted Tesla Vehicles',
+    description:
+      'Eligible investors can redeem programme credits toward preferred pricing on selected electric vehicles.',
+    points: [
+      'Pay with account balance or supported crypto',
+      'Preferred programme pricing on selected models',
+      'Unlock higher tiers as your portfolio grows',
+    ],
+  },
+  {
+    icon: FaGift,
+    title: 'Win Tesla Products',
+    description:
+      'Active investors are automatically entered into periodic reward draws for Tesla-branded products.',
+    points: [
+      'Model 3, Model Y and Cybertruck reward draws',
+      'Optimus and Powerwall themed prizes',
+      'Entry tied to eligible plan participation',
+    ],
+  },
+  {
+    icon: FaRobot,
+    title: 'Self-Driving & Autonomy Rewards',
+    description:
+      'Autonomy-themed reward tiers for investors focused on AI, robotics and self-driving technology.',
+    points: [
+      'FSD-style software reward credits',
+      'Robotics and autonomy product rewards',
+      'Priority access to new programme tiers',
+    ],
+  },
+];
+
+const prizeChips = [
+  'Model 3',
+  'Model Y',
+  'Cybertruck',
+  'FSD Software',
+  'Optimus Robot',
+  'Powerwall',
+];
+
+const TeslaRewards = () => (
+  <section id="rewards" className="py-20">
+    <div className="container mx-auto px-4">
+      <div className="mb-16 text-center">
+        <span className="text-sm font-bold uppercase tracking-wider text-blue-400">
+          Tesla Rewards Programme
+        </span>
+        <h2 className="mt-4 mb-6 text-3xl font-bold md:text-4xl">
+          Invest Today. <span className="gradient-text">Drive Tomorrow.</span>
+        </h2>
+        <p className="mx-auto max-w-2xl text-slate-400">
+          A platform rewards programme that lets eligible investors redeem
+          programme credits toward discounted electric vehicles, enter reward
+          draws for Tesla-branded products, and access autonomy-themed tiers.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-5">
+        {/* Vehicle visual */}
+        <motion.div
+          initial={{ opacity: 0, x: -40 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.7 }}
+          viewport={{ once: true }}
+          className="overflow-hidden rounded-2xl bg-slate-800 card-gradient card-hover lg:col-span-2"
+        >
+          <img
+            src={IMAGES.cybertruck}
+            alt="Electric vehicle reward"
+            className="h-64 w-full object-cover transition-transform duration-500 hover:scale-105 lg:h-full"
+          />
+        </motion.div>
+
+        {/* Reward tiers */}
+        <div className="flex flex-col gap-6 lg:col-span-3">
+          {rewardTiers.map((tier, index) => (
+            <motion.div
+              key={tier.title}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+              viewport={{ once: true }}
+              className="flex gap-4 rounded-2xl bg-slate-800 p-6 card-gradient card-hover md:gap-6"
+            >
+              <div className="feature-icon mb-0 flex-none">
+                <tier.icon className="text-2xl text-white" />
+              </div>
+              <div>
+                <h3 className="mb-2 text-lg font-bold text-white">
+                  {tier.title}
+                </h3>
+                <p className="mb-3 text-sm text-slate-400">
+                  {tier.description}
+                </p>
+                <ul className="space-y-1.5 text-sm text-slate-400">
+                  {tier.points.map((point) => (
+                    <li key={point} className="flex items-start">
+                      <i className="fas fa-check-circle mr-2 mt-0.5 text-blue-500"></i>
+                      {point}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+
+      {/* Prize chips */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        viewport={{ once: true }}
+        className="mt-12 flex flex-wrap justify-center gap-3"
+      >
+        {prizeChips.map((chip) => (
+          <span
+            key={chip}
+            className="rounded-full border border-slate-700 bg-slate-800/70 px-4 py-2 text-sm text-slate-300 transition hover:border-blue-500/50 hover:text-white"
+          >
+            {chip}
+          </span>
+        ))}
+      </motion.div>
+
+      {/* CTA + disclaimer */}
+      <div className="mt-12 text-center">
+        <Link
+          to="/plans"
+          className="inline-flex items-center gap-2 rounded-lg gradient-bg px-8 py-4 font-bold text-white transition transform hover:scale-105 hover:opacity-90"
+        >
+          <FaTrophy className="text-sm" />
+          View Eligible Plans
+        </Link>
+
+        <p className="mx-auto mt-8 max-w-3xl text-xs leading-relaxed text-slate-500">
+          Rewards programme participation is subject to eligibility requirements and
+          programme terms. Vehicle redemption, discount levels and prize
+          availability vary by region and plan tier. This programme is not
+          affiliated with, endorsed by, or sponsored by Tesla, Inc. Tesla product
+          names are used for identification purposes only, and all draws are
+          administered by the platform.
+        </p>
       </div>
     </div>
   </section>
@@ -944,6 +1107,7 @@ function Home() {
       <Header />
       <NavbarHome />
       <Hero />
+      <TeslaRewards />
       <TradingWidget />
       <Stats />
       <Features />
