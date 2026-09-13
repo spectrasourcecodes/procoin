@@ -1,17 +1,67 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { 
-  FaShieldAlt, FaChartLine, FaBolt, FaEye, FaTag, FaHeadset, 
-  FaPercent, FaCoins, FaMicrochip, FaRocket 
+import {
+  FaShieldAlt,
+  FaChartLine,
+  FaBolt,
+  FaEye,
+  FaHeadset,
+  FaMicrochip,
+  FaRocket,
+  FaCar,
+  FaRobot,
+  FaBatteryFull,
+  FaChargingStation,
+  FaBars,
+  FaTimes,
 } from 'react-icons/fa';
 import GoogleTranslate from '../components/GoogleTranslate';
-import { SITE_NAME, ADMIN_EMAIL, ADMIN_WHATSAPP, ADMIN_TELEGRAM, mockInvestmentPlans, mockForexPairs } from '../data/mockData';
+import {
+  SITE_NAME,
+  ADMIN_EMAIL,
+  ADMIN_WHATSAPP,
+  ADMIN_TELEGRAM,
+  mockInvestmentPlans,
+} from '../data/mockData';
 import LoadingScreen from '../components/LoadingScreen';
 import AnimatedCounter from '../components/AnimatedCounter';
 
 const Preloader = () => <LoadingScreen />;
 
+/* ------------------------------------------------------------------ */
+/*  Tesla-related imagery                                              */
+/*  NOTE: Replace these URLs with assets you own or that are properly  */
+/*  licensed for your use. The links below are placeholders only.      */
+/* ------------------------------------------------------------------ */
+const IMAGES = {
+  heroVehicle:
+    'images/Teslacar.jfif',
+  cybertruck:
+    'images/Cybertruck.jfif',
+  charging:
+    'images/Electric Vehicles.jfif',
+  robotics:
+    'images/Supercharging.jfif',
+  elonMusk:
+    'images/ElonMusk2.jfif',
+};
+
+/* ------------------------------------------------------------------ */
+/*  Navigation                                                         */
+/* ------------------------------------------------------------------ */
+const NAV_LINKS = [
+  { label: 'Home', href: '#home' },
+  { label: 'About Tesla', href: '#about' },
+  { label: 'Investment Plans', href: '#plans' },
+  { label: 'Tesla Market', to: '/market' },
+  { label: 'Technology', href: '#technology' },
+  { label: 'FAQ', to: '/faq' },
+];
+
+/* ------------------------------------------------------------------ */
+/*  Top utility bar                                                    */
+/* ------------------------------------------------------------------ */
 const Header = () => (
   <div className="bg-slate-800 py-2">
     <div className="container mx-auto px-4">
@@ -19,7 +69,10 @@ const Header = () => (
         <div className="flex space-x-4 text-sm">
           <div className="flex items-center">
             <i className="fas fa-envelope text-blue-400 mr-2"></i>
-            <a href={`mailto:${ADMIN_EMAIL}`} className="text-slate-300 hover:text-white transition">
+            <a
+              href={`mailto:${ADMIN_EMAIL}`}
+              className="text-slate-300 hover:text-white transition"
+            >
               {ADMIN_EMAIL}
             </a>
           </div>
@@ -34,114 +87,234 @@ const Header = () => (
   </div>
 );
 
-const NavbarHome = () => (
-  <nav className="bg-slate-900/95 backdrop-blur-sm py-4 sticky top-0 z-50 shadow-lg">
-    <div className="container mx-auto px-4">
-      <div className="flex justify-between items-center">
-        <Link to="/" className="flex items-center">
-          <h1 className="text-2xl font-bold gradient-text">{SITE_NAME}</h1>
-        </Link>
+/* ------------------------------------------------------------------ */
+/*  Navbar                                                             */
+/* ------------------------------------------------------------------ */
+const NavbarHome = () => {
+  const [open, setOpen] = useState(false);
 
-        <div className="hidden lg:flex items-center space-x-8">
-          <a href="#about" className="text-slate-300 hover:text-white transition">About</a>
-          <a href="#plans" className="text-slate-300 hover:text-white transition">Plans</a>
-          <a href="#services" className="text-slate-300 hover:text-white transition">Services</a>
-          <Link to="/market" className="text-slate-300 hover:text-white transition">Market</Link>
-          <Link to="/payouts" className="text-slate-300 hover:text-white transition">Live Payouts</Link>
+  const linkClasses = 'text-slate-300 hover:text-white transition';
+
+  return (
+    <nav className="bg-slate-900/95 backdrop-blur-sm py-4 sticky top-0 z-50 shadow-lg">
+      <div className="container mx-auto px-4">
+        <div className="flex justify-between items-center">
+          <Link to="/" className="flex items-center" onClick={() => setOpen(false)}>
+            <h1 className="text-2xl font-bold gradient-text">{SITE_NAME}</h1>
+          </Link>
+
+          {/* Desktop nav */}
+          <div className="hidden lg:flex items-center space-x-8">
+            {NAV_LINKS.map((item) =>
+              item.to ? (
+                <Link key={item.label} to={item.to} className={linkClasses}>
+                  {item.label}
+                </Link>
+              ) : (
+                <a key={item.label} href={item.href} className={linkClasses}>
+                  {item.label}
+                </a>
+              )
+            )}
+          </div>
+
+          {/* Desktop actions */}
+          <div className="hidden lg:flex items-center space-x-4">
+            <Link
+              to="/dashboard"
+              className="px-4 py-2 rounded-lg bg-slate-700 text-white hover:bg-slate-600 transition"
+            >
+              Dashboard
+            </Link>
+            <Link
+              to="/register"
+              className="px-6 py-2 rounded-lg gradient-bg text-white font-medium hover:opacity-90 transition"
+            >
+              Open Account
+            </Link>
+          </div>
+
+          {/* Mobile toggle */}
+          <button
+            type="button"
+            aria-label="Toggle navigation"
+            onClick={() => setOpen((v) => !v)}
+            className="p-2 text-white lg:hidden"
+          >
+            {open ? <FaTimes /> : <FaBars />}
+          </button>
         </div>
 
-        <div className="hidden lg:flex items-center space-x-4">
-          <Link to="/dashboard" className="px-4 py-2 rounded-lg bg-slate-700 text-white hover:bg-slate-600 transition">
-            Dashboard
-          </Link>
-          <Link to="/register" className="px-6 py-2 rounded-lg gradient-bg text-white font-medium hover:opacity-90 transition">
-            Open Account
-          </Link>
-        </div>
+        {/* Mobile menu */}
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            className="overflow-hidden lg:hidden"
+          >
+            <div className="flex flex-col gap-1 py-4">
+              {NAV_LINKS.map((item) =>
+                item.to ? (
+                  <Link
+                    key={item.label}
+                    to={item.to}
+                    onClick={() => setOpen(false)}
+                    className="rounded-lg px-3 py-2 text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition"
+                  >
+                    {item.label}
+                  </Link>
+                ) : (
+                  <a
+                    key={item.label}
+                    href={item.href}
+                    onClick={() => setOpen(false)}
+                    className="rounded-lg px-3 py-2 text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition"
+                  >
+                    {item.label}
+                  </a>
+                )
+              )}
+              <div className="mt-3 flex flex-col gap-2">
+                <Link
+                  to="/dashboard"
+                  onClick={() => setOpen(false)}
+                  className="rounded-lg bg-slate-700 px-4 py-2 text-center text-sm font-medium text-white"
+                >
+                  Dashboard
+                </Link>
+                <Link
+                  to="/register"
+                  onClick={() => setOpen(false)}
+                  className="rounded-lg gradient-bg px-4 py-2 text-center text-sm font-semibold text-white"
+                >
+                  Open Account
+                </Link>
+              </div>
+            </div>
+          </motion.div>
+        )}
       </div>
-    </div>
-  </nav>
-);
+    </nav>
+  );
+};
+
+/* ------------------------------------------------------------------ */
+/*  Hero                                                               */
+/* ------------------------------------------------------------------ */
+const teslaThemes = [
+  { name: 'Tesla (TSLA)', meta: 'NASDAQ · Equity', status: 'Listed' },
+  { name: 'Electric Vehicles', meta: 'EV & Mobility', status: 'Theme' },
+  { name: 'Energy & Storage', meta: 'Solar · Batteries', status: 'Theme' },
+  { name: 'AI & Robotics', meta: 'Autonomy · Optimus', status: 'Theme' },
+];
 
 const Hero = () => (
-  <div className="relative pt-20 pb-32 overflow-hidden">
-    <div className="absolute inset-0 bg-gradient-to-b from-slate-900 to-slate-800 opacity-90"></div>
-    <div className="absolute top-0 right-0 w-full h-full opacity-10">
-      <div className="absolute top-20 right-10 w-64 h-64 bg-blue-500 rounded-full mix-blend-lighten filter blur-3xl opacity-70 animate-blob"></div>
-      <div className="absolute top-40 right-40 w-80 h-80 bg-indigo-500 rounded-full mix-blend-lighten filter blur-3xl opacity-70 animate-blob animation-delay-2000"></div>
-      <div className="absolute top-10 left-40 w-72 h-72 bg-cyan-500 rounded-full mix-blend-lighten filter blur-3xl opacity-70 animate-blob animation-delay-4000"></div>
+  <section id="home" className="relative overflow-hidden">
+    <div className="absolute inset-0 bg-gradient-to-b from-slate-900 to-slate-800 opacity-95"></div>
+
+    {/* Background visual */}
+    <div className="absolute inset-0">
+      <img
+        src={IMAGES.heroVehicle}
+        alt="Modern electric vehicle"
+        className="h-full w-full object-cover opacity-25"
+      />
+      <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-900/85 to-slate-900/40" />
     </div>
-    
-    <div className="container mx-auto px-4 relative z-10">
-      <div className="flex flex-col lg:flex-row items-center">
-        <motion.div 
+
+    <div className="relative z-10 container mx-auto px-4 pt-20 pb-24 lg:pt-28 lg:pb-32">
+      <div className="flex flex-col items-center gap-14 lg:flex-row">
+        {/* Copy */}
+        <motion.div
           initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8 }}
-          className="lg:w-1/2 mb-12 lg:mb-0"
+          className="w-full lg:w-1/2"
         >
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6">
-            Trade Forex & Crypto with <span className="gradient-text">Professional Excellence</span>
+          <h1 className="mb-6 text-4xl font-bold leading-tight md:text-5xl lg:text-6xl">
+            Invest in the Future of{' '}
+            <span className="gradient-text">Mobility</span>
           </h1>
-          <p className="text-lg text-slate-300 mb-8 max-w-2xl">
-            Join 25,000+ traders who trust us with their investments. Experience premium trading conditions, instant withdrawals, and 24/7 dedicated support.
+
+          <p className="mb-8 max-w-2xl text-lg text-slate-300">
+            Explore investment opportunities centred around Tesla-inspired innovation —
+            electric mobility, clean energy, battery technology, artificial intelligence
+            and robotics.
           </p>
+
           <div className="flex flex-wrap gap-4">
-            <Link to="/register" className="px-8 py-4 rounded-lg gradient-bg text-white font-bold text-lg hover:opacity-90 transition transform hover:scale-105">
-              Get Started
+            <Link
+              to="/register"
+              className="rounded-lg gradient-bg px-8 py-4 text-base font-bold text-white transition transform hover:scale-105 hover:opacity-90 md:text-lg"
+            >
+              Start Investing
             </Link>
-            <Link to="/plans" className="px-8 py-4 rounded-lg bg-slate-700 text-white font-bold text-lg hover:bg-slate-600 transition transform hover:scale-105">
-              View Plans
+            <Link
+              to="/plans"
+              className="rounded-lg bg-slate-700 px-8 py-4 text-base font-bold text-white transition transform hover:scale-105 hover:bg-slate-600 md:text-lg"
+            >
+              Explore Investment Plans
             </Link>
           </div>
+
+          <p className="mt-6 max-w-lg text-xs leading-relaxed text-slate-500">
+            All investing involves risk. Plan figures shown on this platform are
+            illustrative parameters — not guarantees and not Tesla stock performance.
+          </p>
         </motion.div>
-        
-        <motion.div 
+
+        {/* Tesla market card */}
+        <motion.div
           initial={{ opacity: 0, x: 50 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8 }}
-          className="lg:w-1/2 flex justify-center"
+          transition={{ duration: 0.8, delay: 0.15 }}
+          className="flex w-full justify-center lg:w-1/2 lg:justify-end"
         >
-          <div className="relative">
-            <div className="relative bg-gradient-to-br from-blue-500/20 to-indigo-600/20 rounded-2xl p-1 backdrop-blur-sm glow-effect">
-              <div className="bg-slate-800/80 rounded-xl p-6">
-                <div className="flex justify-between items-center mb-6">
-                  <div>
-                    <h3 className="text-xl font-bold text-white">Live Market Data</h3>
-                    <p className="text-slate-400">Real-time updates</p>
-                  </div>
-                  <div className="flex space-x-2">
-                    <div className="w-3 h-3 bg-red-400 rounded-full"></div>
-                    <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
-                    <div className="w-3 h-3 bg-green-400 rounded-full"></div>
-                  </div>
+          <div className="w-full max-w-md rounded-2xl bg-gradient-to-br from-blue-500/20 to-purple-600/20 p-1 backdrop-blur-sm glow-effect">
+            <div className="rounded-xl bg-slate-800/90 p-6">
+              <div className="mb-6 flex items-start justify-between">
+                <div>
+                  <h3 className="text-lg font-bold text-white">
+                    Tesla Investment Themes
+                  </h3>
+                  <p className="mt-1 text-xs text-slate-500">
+                    Demo data · not real-time market prices
+                  </p>
                 </div>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  {mockForexPairs.slice(0, 4).map((item, index) => (
-                    <motion.div 
-                      key={index}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                      className="bg-slate-700 rounded-lg p-3"
-                    >
-                      <div className="text-slate-400 text-sm">{item.pair}</div>
-                      <div className="text-white font-bold">{item.price}</div>
-                      <div className={`${item.change >= 0 ? 'text-green-500' : 'text-red-500'} text-xs`}>
-                        {item.change >= 0 ? '+' : ''}{item.change}%
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-                
-                <div className="mt-4 h-32 bg-gradient-to-r from-blue-900/30 to-indigo-900/30 rounded-lg flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-white mb-2">
-                      <AnimatedCounter end={42.7} suffix="%" />
+                <span className="rounded-md bg-blue-500/15 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-blue-400">
+                  Demo
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                {teslaThemes.map((item, index) => (
+                  <motion.div
+                    key={item.name}
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.25 + index * 0.08 }}
+                    className="rounded-xl border border-slate-700 bg-slate-700/60 p-3 transition hover:border-blue-500/50"
+                  >
+                    <div className="text-[11px] text-slate-400">{item.meta}</div>
+                    <div className="mt-1 text-sm font-semibold text-white">
+                      {item.name}
                     </div>
-                    <div className="text-slate-400">Average Portfolio Growth</div>
-                  </div>
+                    <div className="mt-1 text-[10px] uppercase tracking-wider text-blue-400">
+                      {item.status}
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+
+              <div className="mt-4 rounded-xl bg-gradient-to-r from-blue-900/30 to-purple-900/30 p-5 text-center">
+                <div className="text-3xl font-bold text-white">
+                  <AnimatedCounter end={5} />
+                </div>
+                <div className="mt-1 text-sm text-slate-400">
+                  Core Technology Themes
+                </div>
+                <div className="mt-1 text-xs text-slate-500">
+                  EV · Energy · AI · Robotics · Charging
                 </div>
               </div>
             </div>
@@ -149,26 +322,31 @@ const Hero = () => (
         </motion.div>
       </div>
     </div>
-  </div>
+  </section>
 );
 
+/* ------------------------------------------------------------------ */
+/*  Market ticker (TradingView) — Tesla & EV ecosystem                 */
+/* ------------------------------------------------------------------ */
 const TradingWidget = () => {
   useEffect(() => {
     const script = document.createElement('script');
-    script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js';
+    script.src =
+      'https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js';
     script.async = true;
     script.innerHTML = JSON.stringify({
-      "symbols": [
-        { "proName": "FOREXCOM:SPXUSD", "title": "S&P 500" },
-        { "proName": "FOREXCOM:NSXUSD", "title": "Nasdaq 100" },
-        { "proName": "FX_IDC:EURUSD", "title": "EUR/USD" },
-        { "proName": "BITSTAMP:BTCUSD", "title": "BTC/USD" },
-        { "proName": "BITSTAMP:ETHUSD", "title": "ETH/USD" }
+      symbols: [
+        { proName: 'NASDAQ:TSLA', title: 'Tesla' },
+        { proName: 'NASDAQ:RIVN', title: 'Rivian' },
+        { proName: 'NASDAQ:LCID', title: 'Lucid' },
+        { proName: 'NASDAQ:NIO', title: 'NIO' },
+        { proName: 'NASDAQ:ENPH', title: 'Enphase Energy' },
+        { proName: 'NASDAQ:PLUG', title: 'Plug Power' },
       ],
-      "colorTheme": "dark",
-      "isTransparent": false,
-      "displayMode": "adaptive",
-      "locale": "en"
+      colorTheme: 'dark',
+      isTransparent: false,
+      displayMode: 'adaptive',
+      locale: 'en',
     });
     document.getElementById('tradingview-widget')?.appendChild(script);
   }, []);
@@ -182,76 +360,104 @@ const TradingWidget = () => {
   );
 };
 
+/* ------------------------------------------------------------------ */
+/*  Stats                                                              */
+/* ------------------------------------------------------------------ */
 const Stats = () => {
   const stats = [
-    { value: 3412, label: "Active Trades", suffix: "+" },
-    { value: 8725, label: "Online Members", suffix: "+" },
-    { value: 12545, label: "Registered Members", suffix: "+" },
-    { value: 554285, label: "Total Payouts", prefix: "$" }
+    { value: 18400, label: 'Active Investors', suffix: '+' },
+    { value: 12, label: 'Investment Plans', suffix: '' },
+    { value: 42, label: 'Supported Technologies', suffix: '+' },
+    { value: 96, label: 'Countries Served', suffix: '+' },
   ];
 
   return (
     <section className="py-20">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
           {stats.map((stat, index) => (
             <motion.div
-              key={index}
+              key={stat.label}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
               viewport={{ once: true }}
               className="text-center"
             >
-              <div className="text-4xl md:text-5xl font-bold text-blue-500 mb-2">
-                <AnimatedCounter end={stat.value} prefix={stat.prefix || ''} suffix={stat.suffix || ''} />
+              <div className="mb-2 text-4xl font-bold text-blue-500 md:text-5xl">
+                <AnimatedCounter
+                  end={stat.value}
+                  prefix={stat.prefix || ''}
+                  suffix={stat.suffix || ''}
+                />
               </div>
               <div className="text-slate-400">{stat.label}</div>
             </motion.div>
           ))}
         </div>
+        <p className="mt-10 text-center text-xs text-slate-500">
+          Platform metrics shown for demonstration purposes.
+        </p>
       </div>
     </section>
   );
 };
 
+/* ------------------------------------------------------------------ */
+/*  Features / About                                                   */
+/* ------------------------------------------------------------------ */
 const Features = () => {
   const features = [
     {
+      icon: FaRocket,
+      title: 'Tesla-Focused Opportunities',
+      description:
+        'Investment themes centred around electric vehicles, clean energy, AI and robotics.',
+      points: ['EV & mobility themes', 'Clean energy & storage', 'AI and automation'],
+    },
+    {
       icon: FaShieldAlt,
-      title: "Best Security",
-      description: "Bank-level security with 2FA, cold storage, and DDoS protection",
-      points: ["Bank-level security", "2FA authentication", "Cold storage wallets"]
+      title: 'Secure Investment Experience',
+      description:
+        'Account security and transparent portfolio information at every step.',
+      points: ['Encrypted account access', 'Transparent portfolio view', 'Verified withdrawals'],
     },
     {
       icon: FaChartLine,
-      title: "Range of APIs",
-      description: "Advanced charting tools with custom indicators and real-time data",
-      points: ["Real-time market data", "Advanced charting tools", "Custom indicators"]
+      title: 'Flexible Investment Plans',
+      description:
+        'Multiple platform plans designed around different horizons and budgets.',
+      points: ['Multiple plan tiers', 'Clear plan parameters', 'Low entry minimums'],
     },
     {
-      icon: FaBolt,
-      title: "Instant Effect",
-      description: "Real-time operations with instant deposits and fast withdrawals",
-      points: ["Instant deposits", "Fast withdrawals", "Real-time execution"]
-    }
+      icon: FaMicrochip,
+      title: 'Global Technology Focus',
+      description:
+        'Built around electric mobility, energy storage, charging infrastructure and automation.',
+      points: ['Charging infrastructure', 'Battery technology', 'Autonomous systems'],
+    },
   ];
 
   return (
-    <section className="py-20" id="about">
+    <section id="about" className="py-20">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
-          <span className="text-blue-400 font-bold uppercase tracking-wider">Why Choose Us</span>
-          <h2 className="text-3xl md:text-4xl font-bold mt-4 mb-6">Professional Trading Platform</h2>
-          <p className="text-slate-400 max-w-2xl mx-auto">
-            Trade on the largest selection of assets in the industry. From forex pairs and commodities to crypto and indices.
+        <div className="mb-16 text-center">
+          <span className="text-sm font-bold uppercase tracking-wider text-blue-400">
+            About Tesla Investing
+          </span>
+          <h2 className="mt-4 mb-6 text-3xl font-bold md:text-4xl">
+            A Tesla-Inspired Investment Platform
+          </h2>
+          <p className="mx-auto max-w-2xl text-slate-400">
+            We bring the themes shaping modern technology — electric mobility, clean
+            energy and automation — into a clean, transparent investment experience.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
           {features.map((feature, index) => (
             <motion.div
-              key={index}
+              key={feature.title}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
@@ -261,11 +467,11 @@ const Features = () => {
               <div className="feature-icon">
                 <feature.icon className="text-2xl text-white" />
               </div>
-              <h3 className="text-xl font-bold mb-4">{feature.title}</h3>
-              <p className="text-slate-400 mb-4">{feature.description}</p>
+              <h3 className="mb-4 text-xl font-bold">{feature.title}</h3>
+              <p className="mb-4 text-slate-400">{feature.description}</p>
               <ul className="space-y-2 text-slate-400">
-                {feature.points.map((point, idx) => (
-                  <li key={idx} className="flex items-center">
+                {feature.points.map((point) => (
+                  <li key={point} className="flex items-center">
                     <i className="fas fa-check-circle text-blue-500 mr-2"></i>
                     {point}
                   </li>
@@ -279,16 +485,144 @@ const Features = () => {
   );
 };
 
-const InvestmentPlans = () => (
-  <section className="py-20 bg-slate-900" id="plans">
+/* ------------------------------------------------------------------ */
+/*  Technology / Building the Future (Elon Musk + Tesla ecosystem)     */
+/* ------------------------------------------------------------------ */
+const pillars = [
+  { icon: FaCar, title: 'Electric Vehicles' },
+  { icon: FaBatteryFull, title: 'Battery Technology' },
+  { icon: FaBolt, title: 'Energy Storage' },
+  { icon: FaChargingStation, title: 'Charging Infrastructure' },
+  { icon: FaMicrochip, title: 'Artificial Intelligence' },
+  { icon: FaRobot, title: 'Robotics' },
+];
+
+const productCards = [
+  { src: IMAGES.heroVehicle, label: 'Electric Vehicles', caption: 'Modern EV platforms' },
+  { src: IMAGES.cybertruck, label: 'Cybertruck', caption: 'Next-generation design' },
+  { src: IMAGES.charging, label: 'Supercharging', caption: 'Charging infrastructure' },
+];
+
+const TeslaInnovation = () => (
+  <section id="technology" className="bg-slate-900 py-24">
     <div className="container mx-auto px-4">
-      <div className="text-center mb-16">
-        <span className="text-blue-400 font-bold uppercase tracking-wider">Investment Plans</span>
-        <h2 className="text-3xl md:text-4xl font-bold mt-4 mb-6">Grow Your Wealth With Us</h2>
-        <p className="text-slate-400 max-w-2xl mx-auto">Choose the plan that fits your investment goals and start earning today</p>
+      <div className="mb-16 text-center">
+        <span className="text-sm font-bold uppercase tracking-wider text-blue-400">
+          Technology
+        </span>
+        <h2 className="mt-4 mb-6 text-3xl font-bold md:text-4xl">
+          Building the Future
+        </h2>
+        <p className="mx-auto max-w-3xl text-slate-400">
+          The Tesla ecosystem reaches far beyond cars — electric vehicles, battery
+          technology, energy storage, charging infrastructure, artificial intelligence,
+          robotics and autonomous systems. These are the themes our investment platform
+          is built around.
+        </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+      {/* Elon Musk + pillars */}
+      <div className="mb-16 grid grid-cols-1 gap-8 lg:grid-cols-5">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="overflow-hidden rounded-2xl bg-slate-800 lg:col-span-2"
+        >
+          <img
+            src={IMAGES.elonMusk}
+            alt="Industry and technology figure"
+            className="h-72 w-full object-cover transition-transform duration-500 hover:scale-105"
+          />
+          <div className="p-6">
+            <h3 className="mb-2 text-xl font-bold text-white">Elon Musk</h3>
+            <p className="text-sm leading-relaxed text-slate-400">
+              Featured here as an industry and technology figure whose companies have
+              shaped electric mobility, energy and automation.
+            </p>
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          viewport={{ once: true }}
+          className="lg:col-span-3"
+        >
+          <div className="grid h-full grid-cols-1 gap-4 sm:grid-cols-2">
+            {pillars.map((pillar) => (
+              <div
+                key={pillar.title}
+                className="flex items-center gap-4 rounded-2xl bg-slate-800/70 p-5 card-gradient card-hover"
+              >
+                <div className="flex h-11 w-11 flex-none items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-purple-600">
+                  <pillar.icon className="text-white" />
+                </div>
+                <span className="text-sm font-semibold text-white">
+                  {pillar.title}
+                </span>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Small product / infrastructure cards */}
+      <div className="mb-10 grid grid-cols-1 gap-6 sm:grid-cols-3">
+        {productCards.map((card, index) => (
+          <motion.div
+            key={card.label}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1 }}
+            viewport={{ once: true }}
+            className="group overflow-hidden rounded-2xl bg-slate-800 card-gradient card-hover"
+          >
+            <div className="overflow-hidden">
+              <img
+                src={card.src}
+                alt={card.label}
+                className="h-48 w-full object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+            </div>
+            <div className="p-5">
+              <h4 className="text-sm font-bold text-white">{card.label}</h4>
+              <p className="mt-1 text-xs text-slate-400">{card.caption}</p>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+
+      <p className="mx-auto max-w-3xl text-center text-xs leading-relaxed text-slate-500">
+        Elon Musk is presented here purely as an industry and technology figure. He does
+        not operate, endorse, manage or guarantee this investment platform.
+      </p>
+    </div>
+  </section>
+);
+
+/* ------------------------------------------------------------------ */
+/*  Investment Plans                                                   */
+/* ------------------------------------------------------------------ */
+const InvestmentPlans = () => (
+  <section id="plans" className="py-20 bg-slate-900">
+    <div className="container mx-auto px-4">
+      <div className="mb-16 text-center">
+        <span className="text-sm font-bold uppercase tracking-wider text-blue-400">
+          Investment Plans
+        </span>
+        <h2 className="mt-4 mb-6 text-3xl font-bold md:text-4xl">
+          Tesla-Themed Investment Plans
+        </h2>
+        <p className="mx-auto max-w-2xl text-slate-400">
+          Choose the plan that matches your investment horizon. All figures below are
+          platform plan parameters — they are not Tesla stock returns and are not
+          guaranteed.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {mockInvestmentPlans.map((plan, index) => (
           <motion.div
             key={plan.id}
@@ -299,69 +633,127 @@ const InvestmentPlans = () => (
             className={`bg-gradient-to-br ${plan.bgClass} from-slate-800 to-slate-900 rounded-2xl overflow-hidden border ${plan.borderClass} hover:scale-105 transition-all duration-300`}
           >
             <div className="p-6">
-              <div className="text-center mb-6">
-                <h3 className={`text-xl font-bold ${plan.colorClass} mb-2`}>{plan.name}</h3>
-                <div className="text-3xl font-bold text-white mb-1">${plan.minAmount.toLocaleString()}</div>
-                <div className="text-slate-400 text-sm">Min. Investment</div>
+              <div className="mb-6 text-center">
+                <h3 className={`text-xl font-bold ${plan.colorClass} mb-2`}>
+                  {plan.name}
+                </h3>
+                <div className="mb-1 text-3xl font-bold text-white">
+                  ${plan.minAmount.toLocaleString()}
+                </div>
+                <div className="text-sm text-slate-400">Min. Investment</div>
               </div>
-              <ul className="space-y-3 mb-8">
+
+              <ul className="mb-8 space-y-3">
                 <li className="flex justify-between">
                   <span className="text-slate-400">Duration</span>
-                  <span className="text-white font-semibold">{plan.duration} days</span>
+                  <span className="font-semibold text-white">
+                    {plan.duration} days
+                  </span>
                 </li>
                 <li className="flex justify-between">
-                  <span className="text-slate-400">ROI</span>
-                  <span className="text-white font-semibold">{plan.roi}%</span>
+                  <span className="text-slate-400">Plan ROI</span>
+                  <span className="font-semibold text-white">{plan.roi}%</span>
                 </li>
                 <li className="flex justify-between">
                   <span className="text-slate-400">Bonus</span>
-                  <span className="text-white font-semibold">{plan.bonus}%</span>
+                  <span className="font-semibold text-white">{plan.bonus}%</span>
                 </li>
               </ul>
-              <Link to="/register" className="block w-full py-3 px-4 text-center rounded-lg gradient-bg text-white font-bold hover:opacity-90 transition">
+
+              <Link
+                to="/register"
+                className="block w-full rounded-lg gradient-bg py-3 text-center font-bold text-white transition hover:opacity-90"
+              >
                 Invest Now
               </Link>
             </div>
           </motion.div>
         ))}
       </div>
+
+      <p className="mx-auto mt-10 max-w-2xl text-center text-xs leading-relaxed text-slate-500">
+        ROI and bonus values are platform investment-plan parameters shown for
+        illustration only. They are not guaranteed and do not represent Tesla stock
+        performance.
+      </p>
     </div>
   </section>
 );
 
+/* ------------------------------------------------------------------ */
+/*  Services                                                           */
+/* ------------------------------------------------------------------ */
 const Services = () => {
   const services = [
-    { icon: FaChartLine, title: "200x Leverage Trading", description: "Ultra fast execution with tight spreads" },
-    { icon: FaEye, title: "Fully Transparent", description: "Real-time detailed data monitoring" },
-    { icon: FaTag, title: "Low Fees", description: "Minimal transaction fees" },
-    { icon: FaShieldAlt, title: "Security & Stability", description: "Latest security measures" },
-    { icon: FaHeadset, title: "24/7 Support", description: "Multi-channel customer support" },
-    { icon: FaPercent, title: "Competitive Commissions", description: "Special conditions for high-volume traders" },
-    { icon: FaCoins, title: "Crypto & Forex", description: "Trade major cryptocurrencies and forex pairs" },
-    { icon: FaMicrochip, title: "Advanced Technology", description: "Solid technological base with unique features" }
+    {
+      icon: FaCar,
+      title: 'Tesla & EV Opportunities',
+      description: 'Investment themes built around electric vehicles and modern mobility.',
+    },
+    {
+      icon: FaBolt,
+      title: 'Clean Energy',
+      description: 'Solar, energy generation and sustainable power themes.',
+    },
+    {
+      icon: FaBatteryFull,
+      title: 'Battery Technology',
+      description: 'Energy storage and next-generation battery innovation.',
+    },
+    {
+      icon: FaMicrochip,
+      title: 'AI & Automation',
+      description: 'Artificial intelligence and automated systems.',
+    },
+    {
+      icon: FaRobot,
+      title: 'Robotics',
+      description: 'Robotics and autonomous technology themes.',
+    },
+    {
+      icon: FaChargingStation,
+      title: 'Supercharging Infrastructure',
+      description: 'EV charging networks and supporting infrastructure.',
+    },
+    {
+      icon: FaEye,
+      title: 'Portfolio Monitoring',
+      description: 'Transparent, real-time visibility of your portfolio.',
+    },
+    {
+      icon: FaHeadset,
+      title: '24/7 Support',
+      description: 'Multi-channel customer support whenever you need it.',
+    },
   ];
 
   return (
-    <section className="py-20 bg-slate-900" id="services">
+    <section id="services" className="py-20 bg-slate-900">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
-          <span className="text-blue-400 font-bold uppercase tracking-wider">Our Services</span>
-          <h2 className="text-3xl md:text-4xl font-bold mt-4 mb-6">Comprehensive Trading Solutions</h2>
-          <p className="text-slate-400 max-w-2xl mx-auto">Experience the benefits of trading with industry experts</p>
+        <div className="mb-16 text-center">
+          <span className="text-sm font-bold uppercase tracking-wider text-blue-400">
+            Our Services
+          </span>
+          <h2 className="mt-4 mb-6 text-3xl font-bold md:text-4xl">
+            Technology-Focused Investment Solutions
+          </h2>
+          <p className="mx-auto max-w-2xl text-slate-400">
+            Explore the technology themes and platform services available to investors.
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
           {services.map((service, index) => (
             <motion.div
-              key={index}
+              key={service.title}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
+              transition={{ delay: index * 0.08 }}
               viewport={{ once: true }}
               className="bg-slate-800 rounded-2xl p-6 card-gradient card-hover"
             >
-              <service.icon className="text-3xl text-blue-500 mb-4" />
-              <h3 className="text-xl font-bold mb-3">{service.title}</h3>
+              <service.icon className="mb-4 text-3xl text-blue-500" />
+              <h3 className="mb-3 text-xl font-bold">{service.title}</h3>
               <p className="text-slate-400">{service.description}</p>
             </motion.div>
           ))}
@@ -371,6 +763,9 @@ const Services = () => {
   );
 };
 
+/* ------------------------------------------------------------------ */
+/*  CTA                                                                */
+/* ------------------------------------------------------------------ */
 const CTA = () => (
   <section className="py-20">
     <div className="container mx-auto px-4">
@@ -378,28 +773,38 @@ const CTA = () => (
         initial={{ opacity: 0, scale: 0.9 }}
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: true }}
-        className="bg-gradient-to-r from-blue-900/30 to-indigo-900/30 rounded-3xl p-10 md:p-16 text-center backdrop-blur-sm"
+        className="rounded-3xl bg-gradient-to-r from-blue-900/30 to-purple-900/30 p-10 text-center backdrop-blur-sm md:p-16"
       >
-        <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Start Trading?</h2>
-        <p className="text-slate-300 max-w-2xl mx-auto mb-8">
-          Join thousands of investors who trust {SITE_NAME} with their investments. Sign up today and start earning in minutes.
+        <h2 className="mb-6 text-3xl font-bold md:text-4xl">
+          Ready to Invest in the Future?
+        </h2>
+        <p className="mx-auto mb-8 max-w-2xl text-slate-300">
+          Explore the available investment plans and technology themes. No profit
+          promises — just clear plan parameters and full transparency.
         </p>
-        <Link to="/register" className="inline-block px-8 py-4 rounded-lg gradient-bg text-white font-bold text-lg hover:opacity-90 transition transform hover:scale-105">
-          Create Account Now
+        <Link
+          to="/register"
+          className="inline-block rounded-lg gradient-bg px-8 py-4 text-base font-bold text-white transition transform hover:scale-105 hover:opacity-90 md:text-lg"
+        >
+          Create Investment Account
         </Link>
       </motion.div>
     </div>
   </section>
 );
 
+/* ------------------------------------------------------------------ */
+/*  Footer                                                             */
+/* ------------------------------------------------------------------ */
 const Footer = () => (
   <footer className="bg-slate-900 pt-20 pb-10 border-t border-slate-800">
     <div className="container mx-auto px-4">
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+      <div className="mb-12 grid grid-cols-1 gap-8 md:grid-cols-4">
         <div>
-          <h2 className="text-xl font-bold gradient-text mb-4">{SITE_NAME}</h2>
-          <p className="text-slate-400 mb-6 text-sm leading-relaxed">
-            A globally recognized, innovative, and top-tier investment company operating in financial markets with professional traders to ensure secure trading experiences.
+          <h2 className="mb-4 text-xl font-bold gradient-text">{SITE_NAME}</h2>
+          <p className="mb-6 text-sm leading-relaxed text-slate-400">
+            A technology-focused investment platform built around Tesla-inspired themes:
+            electric mobility, clean energy, battery technology, AI and robotics.
           </p>
           <div className="flex space-x-4">
             <a href="#" className="text-slate-400 hover:text-blue-500 transition">
@@ -418,53 +823,112 @@ const Footer = () => (
         </div>
 
         <div>
-          <h3 className="text-lg font-bold text-white mb-6">Contact</h3>
+          <h3 className="mb-6 text-lg font-bold text-white">Contact</h3>
           <ul className="space-y-4">
             <li className="flex items-start">
-              <i className="fas fa-phone mt-1 text-blue-500 mr-3"></i>
+              <i className="fas fa-phone mt-1 mr-3 text-blue-500"></i>
               <span className="text-slate-400">+{ADMIN_WHATSAPP}</span>
             </li>
             <li className="flex items-start">
-              <i className="fas fa-envelope mt-1 text-blue-500 mr-3"></i>
+              <i className="fas fa-envelope mt-1 mr-3 text-blue-500"></i>
               <span className="text-slate-400">{ADMIN_EMAIL}</span>
             </li>
             <li className="flex items-start">
-              <i className="fas fa-map-marker-alt mt-1 text-blue-500 mr-3"></i>
+              <i className="fas fa-map-marker-alt mt-1 mr-3 text-blue-500"></i>
               <span className="text-slate-400">United Kingdom</span>
             </li>
           </ul>
         </div>
 
         <div>
-          <h3 className="text-lg font-bold text-white mb-6">Quick Links</h3>
+          <h3 className="mb-6 text-lg font-bold text-white">Quick Links</h3>
           <ul className="space-y-3">
-            <li><Link to="/dashboard" className="text-slate-400 hover:text-blue-500 transition">Dashboard</Link></li>
-            <li><Link to="/deposit" className="text-slate-400 hover:text-blue-500 transition">Deposit</Link></li>
-            <li><Link to="/withdraw" className="text-slate-400 hover:text-blue-500 transition">Withdraw</Link></li>
-            <li><Link to="/plans" className="text-slate-400 hover:text-blue-500 transition">Investment Plans</Link></li>
+            <li>
+              <a href="#about" className="text-slate-400 hover:text-blue-500 transition">
+                About
+              </a>
+            </li>
+            <li>
+              <a href="#plans" className="text-slate-400 hover:text-blue-500 transition">
+                Investment Plans
+              </a>
+            </li>
+            <li>
+              <Link to="/market" className="text-slate-400 hover:text-blue-500 transition">
+                Market
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/dashboard"
+                className="text-slate-400 hover:text-blue-500 transition"
+              >
+                Dashboard
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/deposit"
+                className="text-slate-400 hover:text-blue-500 transition"
+              >
+                Deposit
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/withdraw"
+                className="text-slate-400 hover:text-blue-500 transition"
+              >
+                Withdraw
+              </Link>
+            </li>
           </ul>
         </div>
 
         <div>
-          <h3 className="text-lg font-bold text-white mb-6">Support</h3>
+          <h3 className="mb-6 text-lg font-bold text-white">Support</h3>
           <ul className="space-y-3">
-            <li><Link to="/support" className="text-slate-400 hover:text-blue-500 transition">Contact Support</Link></li>
-            <li><Link to="/faq" className="text-slate-400 hover:text-blue-500 transition">FAQ</Link></li>
-            <li><Link to="/terms" className="text-slate-400 hover:text-blue-500 transition">Terms & Conditions</Link></li>
-            <li><Link to="/privacy" className="text-slate-400 hover:text-blue-500 transition">Privacy Policy</Link></li>
+            <li>
+              <Link to="/support" className="text-slate-400 hover:text-blue-500 transition">
+                Contact Support
+              </Link>
+            </li>
+            <li>
+              <Link to="/faq" className="text-slate-400 hover:text-blue-500 transition">
+                FAQ
+              </Link>
+            </li>
+            <li>
+              <Link to="/terms" className="text-slate-400 hover:text-blue-500 transition">
+                Terms &amp; Conditions
+              </Link>
+            </li>
+            <li>
+              <Link to="/privacy" className="text-slate-400 hover:text-blue-500 transition">
+                Privacy Policy
+              </Link>
+            </li>
           </ul>
         </div>
       </div>
 
-      <div className="pt-10 border-t border-slate-800 text-center">
-        <p className="text-slate-500 text-sm">
+      <div className="border-t border-slate-800 pt-10 text-center">
+        <p className="text-sm text-slate-500">
           © 2024 {SITE_NAME}. All Rights Reserved
+        </p>
+        <p className="mx-auto mt-3 max-w-3xl text-xs leading-relaxed text-slate-500">
+          This platform is not affiliated with, endorsed by, or operated by Tesla, Inc.
+          or Elon Musk. All investing involves risk, including possible loss of
+          principal.
         </p>
       </div>
     </div>
   </footer>
 );
 
+/* ------------------------------------------------------------------ */
+/*  Page                                                               */
+/* ------------------------------------------------------------------ */
 function Home() {
   const [isLoading, setIsLoading] = useState(true);
 
@@ -483,6 +947,7 @@ function Home() {
       <TradingWidget />
       <Stats />
       <Features />
+      <TeslaInnovation />
       <InvestmentPlans />
       <Services />
       <CTA />
