@@ -17,7 +17,6 @@ import {
   FaTimes,
   FaGift,
   FaTrophy,
-  FaCoins,
   FaCarSide,
 } from 'react-icons/fa';
 import GoogleTranslate from '../components/GoogleTranslate';
@@ -40,17 +39,17 @@ const Preloader = () => <LoadingScreen />;
 /* ------------------------------------------------------------------ */
 const IMAGES = {
   heroVehicle:
-    'images/Teslacar.jfif',
+    'https://images.unsplash.com/photo-1560958089-b8a1929cea89?auto=format&fit=crop&w=1600&q=80',
   cybertruck:
-    'images/Cybertruck.jfif',
+    'https://images.unsplash.com/photo-1620891549027-942fdc95d3f5?auto=format&fit=crop&w=1000&q=80',
   charging:
-    'images/Electric Vehicles.jfif',
+    'https://images.unsplash.com/photo-1617886322168-72b886573cce?auto=format&fit=crop&w=1000&q=80',
   robotics:
-    'images/Supercharging.jfif',
+    'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=1000&q=80',
+  // Replace with a properly licensed portrait (e.g. a Creative Commons
+  // image from Wikimedia Commons) before going live.
   elonMusk:
-    'images/ElonMusk2.jfif',
-  giftcar:
-    'images/Teslacar2.jfif'
+    'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=1000&q=80',
 };
 
 /* ------------------------------------------------------------------ */
@@ -332,7 +331,7 @@ const Hero = () => (
 );
 
 /* ------------------------------------------------------------------ */
-/*  Tesla Rewards Programme                                            */
+/*  Tesla Rewards Programme (second section)                           */
 /* ------------------------------------------------------------------ */
 const rewardTiers = [
   {
@@ -406,7 +405,7 @@ const TeslaRewards = () => (
           className="overflow-hidden rounded-2xl bg-slate-800 card-gradient card-hover lg:col-span-2"
         >
           <img
-            src={IMAGES.giftcar}
+            src={IMAGES.cybertruck}
             alt="Electric vehicle reward"
             className="h-64 w-full object-cover transition-transform duration-500 hover:scale-105 lg:h-full"
           />
@@ -844,6 +843,110 @@ const InvestmentPlans = () => (
 );
 
 /* ------------------------------------------------------------------ */
+/*  Hypothetical Return Structures (NEW)                               */
+/* ------------------------------------------------------------------ */
+const returnOptions = [
+  {
+    rate: '15%',
+    title: 'Fund Performance Returns',
+    description:
+      "Investor contributes money and receives a return based on the fund's performance.",
+    image: IMAGES.charging,
+    alt: 'Charging infrastructure',
+    tag: 'Fund Model',
+  },
+  {
+    rate: '8%',
+    title: 'Tesla Vehicle Redemption',
+    description:
+      'Money is invested for a set period, then the accumulated amount can be used toward purchasing a Tesla.',
+    image: IMAGES.heroVehicle,
+    alt: 'Tesla electric vehicle',
+    tag: 'Vehicle Model',
+  },
+  {
+    rate: '12%',
+    title: 'Tesla Location Profit Share',
+    description:
+      'Investor contributes toward a hypothetical Tesla location and receives a share of its profits.',
+    image: IMAGES.cybertruck,
+    alt: 'Tesla Cybertruck',
+    tag: 'Location Model',
+  },
+];
+
+const HypotheticalReturns = () => (
+  <section id="returns" className="py-20">
+    <div className="container mx-auto px-4">
+      <div className="mb-16 text-center">
+        <span className="text-sm font-bold uppercase tracking-wider text-blue-400">
+          Hypothetical Return
+        </span>
+        <h2 className="mt-4 mb-6 text-3xl font-bold md:text-4xl">
+          Illustrative Daily Return Structures
+        </h2>
+        <p className="mx-auto max-w-2xl text-slate-400">
+          The structures below illustrate how different contribution models could
+          work. Each rate is a hypothetical daily figure shown for illustration
+          only — not a real financial product.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+        {returnOptions.map((option, index) => (
+          <motion.div
+            key={option.title}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1 }}
+            viewport={{ once: true }}
+            className="group overflow-hidden rounded-2xl bg-slate-800 card-gradient card-hover"
+          >
+            {/* Image */}
+            <div className="relative overflow-hidden">
+              <img
+                src={option.image}
+                alt={option.alt}
+                className="h-48 w-full object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/30 to-transparent" />
+              <span className="absolute left-4 top-4 rounded-md bg-slate-900/80 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-blue-400 backdrop-blur">
+                {option.tag}
+              </span>
+            </div>
+
+            {/* Body */}
+            <div className="p-6">
+              <div className="mb-4 flex items-baseline gap-2">
+                <span className="text-4xl font-bold gradient-text">
+                  {option.rate}
+                </span>
+                <span className="text-sm font-semibold uppercase tracking-wider text-slate-400">
+                  daily
+                </span>
+              </div>
+              <h3 className="mb-3 text-lg font-bold text-white">
+                {option.title}
+              </h3>
+              <p className="text-sm leading-relaxed text-slate-400">
+                {option.description}
+              </p>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+
+      <p className="mx-auto mt-10 max-w-3xl text-center text-xs leading-relaxed text-slate-500">
+        All percentage figures are hypothetical daily return illustrations only. They
+        are not guaranteed, not typical, and do not represent Tesla stock performance,
+        real estate performance, or any real financial product. Actual investment
+        outcomes will vary and may result in loss of principal.
+      </p>
+    </div>
+  </section>
+);
+
+/* ------------------------------------------------------------------ */
 /*  Services                                                           */
 /* ------------------------------------------------------------------ */
 const Services = () => {
@@ -1113,6 +1216,7 @@ function Home() {
       <Features />
       <TeslaInnovation />
       <InvestmentPlans />
+      <HypotheticalReturns />
       <Services />
       <CTA />
       <Footer />
@@ -1120,4 +1224,4 @@ function Home() {
   );
 }
 
-export default Home;
+export default Home;s
