@@ -39,17 +39,17 @@ const Preloader = () => <LoadingScreen />;
 /* ------------------------------------------------------------------ */
 const IMAGES = {
   heroVehicle:
-    'https://images.unsplash.com/photo-1560958089-b8a1929cea89?auto=format&fit=crop&w=1600&q=80',
+    'images/Teslacar.jfif',
   cybertruck:
-    'https://images.unsplash.com/photo-1620891549027-942fdc95d3f5?auto=format&fit=crop&w=1000&q=80',
+    'images/Cybertruck.jfif',
   charging:
-    'https://images.unsplash.com/photo-1617886322168-72b886573cce?auto=format&fit=crop&w=1000&q=80',
+    'images/Electric Vehicles.jfif',
   robotics:
-    'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=1000&q=80',
-  // Replace with a properly licensed portrait (e.g. a Creative Commons
-  // image from Wikimedia Commons) before going live.
+    'images/Supercharging.jfif',
   elonMusk:
-    'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=1000&q=80',
+    'images/ElonMusk2.jfif',
+  giftcar:
+    'images/Teslacar2.jfif'
 };
 
 /* ------------------------------------------------------------------ */
@@ -405,7 +405,7 @@ const TeslaRewards = () => (
           className="overflow-hidden rounded-2xl bg-slate-800 card-gradient card-hover lg:col-span-2"
         >
           <img
-            src={IMAGES.cybertruck}
+            src={IMAGES.giftcar}
             alt="Electric vehicle reward"
             className="h-64 w-full object-cover transition-transform duration-500 hover:scale-105 lg:h-full"
           />
