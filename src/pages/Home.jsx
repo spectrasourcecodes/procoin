@@ -33,23 +33,18 @@ import AnimatedCounter from '../components/AnimatedCounter';
 const Preloader = () => <LoadingScreen />;
 
 /* ------------------------------------------------------------------ */
-/*  Tesla-related imagery                                              */
-/*  NOTE: Replace these URLs with assets you own or that are properly  */
-/*  licensed for your use. The links below are placeholders only.      */
+/*  Tesla-related imagery (local assets in /images)                    */
 /* ------------------------------------------------------------------ */
 const IMAGES = {
-  heroVehicle:
-    'images/Teslacar.jfif',
-  cybertruck:
-    'images/Cybertruck.jfif',
-  charging:
-    'images/Electric Vehicles.jfif',
-  robotics:
-    'images/Supercharging.jfif',
-  elonMusk:
-    'images/ElonMusk2.jfif',
-  giftcar:
-    'images/Teslacar2.jfif'
+  heroVehicle: 'images/Teslacar.jfif',
+  cybertruck: 'images/Cybertruck.jfif',
+  charging: 'images/Electric Vehicles.jfif',
+  robotics: 'images/Supercharging.jfif',
+  elonMusk: 'images/ElonMusk2.jfif',
+  giftcar: 'images/Teslacar1.jfif',
+  giftcar2: 'images/Teslacar2.jfif',
+  giftcar3: 'images/Teslacar3.jfif',
+  giftcar4: 'images/Teslacar4.jfif',
 };
 
 /* ------------------------------------------------------------------ */
@@ -108,7 +103,6 @@ const NavbarHome = () => {
             <h1 className="text-2xl font-bold gradient-text">{SITE_NAME}</h1>
           </Link>
 
-          {/* Desktop nav */}
           <div className="hidden lg:flex items-center space-x-8">
             {NAV_LINKS.map((item) =>
               item.to ? (
@@ -123,7 +117,6 @@ const NavbarHome = () => {
             )}
           </div>
 
-          {/* Desktop actions */}
           <div className="hidden lg:flex items-center space-x-4">
             <Link
               to="/dashboard"
@@ -139,7 +132,6 @@ const NavbarHome = () => {
             </Link>
           </div>
 
-          {/* Mobile toggle */}
           <button
             type="button"
             aria-label="Toggle navigation"
@@ -150,7 +142,6 @@ const NavbarHome = () => {
           </button>
         </div>
 
-        {/* Mobile menu */}
         {open && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
@@ -217,7 +208,6 @@ const Hero = () => (
   <section id="home" className="relative overflow-hidden">
     <div className="absolute inset-0 bg-gradient-to-b from-slate-900 to-slate-800 opacity-95"></div>
 
-    {/* Background visual */}
     <div className="absolute inset-0">
       <img
         src={IMAGES.heroVehicle}
@@ -229,7 +219,6 @@ const Hero = () => (
 
     <div className="relative z-10 container mx-auto px-4 pt-20 pb-24 lg:pt-28 lg:pb-32">
       <div className="flex flex-col items-center gap-14 lg:flex-row">
-        {/* Copy */}
         <motion.div
           initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: 1, x: 0 }}
@@ -268,7 +257,6 @@ const Hero = () => (
           </p>
         </motion.div>
 
-        {/* Tesla market card */}
         <motion.div
           initial={{ opacity: 0, x: 50 }}
           animate={{ opacity: 1, x: 0 }}
@@ -331,7 +319,7 @@ const Hero = () => (
 );
 
 /* ------------------------------------------------------------------ */
-/*  Tesla Rewards Programme (second section)                           */
+/*  Section 2 — Tesla Rewards Programme                                */
 /* ------------------------------------------------------------------ */
 const rewardTiers = [
   {
@@ -396,7 +384,6 @@ const TeslaRewards = () => (
       </div>
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-5">
-        {/* Vehicle visual */}
         <motion.div
           initial={{ opacity: 0, x: -40 }}
           whileInView={{ opacity: 1, x: 0 }}
@@ -411,7 +398,6 @@ const TeslaRewards = () => (
           />
         </motion.div>
 
-        {/* Reward tiers */}
         <div className="flex flex-col gap-6 lg:col-span-3">
           {rewardTiers.map((tier, index) => (
             <motion.div
@@ -446,7 +432,6 @@ const TeslaRewards = () => (
         </div>
       </div>
 
-      {/* Prize chips */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -464,7 +449,6 @@ const TeslaRewards = () => (
         ))}
       </motion.div>
 
-      {/* CTA + disclaimer */}
       <div className="mt-12 text-center">
         <Link
           to="/plans"
@@ -483,6 +467,108 @@ const TeslaRewards = () => (
           administered by the platform.
         </p>
       </div>
+    </div>
+  </section>
+);
+
+/* ------------------------------------------------------------------ */
+/*  Section 3 — Hypothetical Return Structures                         */
+/* ------------------------------------------------------------------ */
+const returnOptions = [
+  {
+    rate: '15%',
+    title: 'Fund Performance Returns',
+    description:
+      "Investor contributes money and receives a return based on the fund's performance.",
+    image: IMAGES.giftcar2,
+    alt: 'Charging infrastructure',
+    tag: 'Fund Model',
+  },
+  {
+    rate: '8%',
+    title: 'Tesla Vehicle Redemption',
+    description:
+      'Money is invested for a set period, then the accumulated amount can be used toward purchasing a Tesla.',
+    image: IMAGES.giftcar3,
+    alt: 'Tesla electric vehicle',
+    tag: 'Vehicle Model',
+  },
+  {
+    rate: '12%',
+    title: 'Tesla Location Profit Share',
+    description:
+      'Investor contributes toward a hypothetical Tesla location and receives a share of its profits.',
+    image: IMAGES.giftcar4,
+    alt: 'Tesla Cybertruck',
+    tag: 'Location Model',
+  },
+];
+
+const HypotheticalReturns = () => (
+  <section id="returns" className="py-20 bg-slate-900">
+    <div className="container mx-auto px-4">
+      <div className="mb-16 text-center">
+        <span className="text-sm font-bold uppercase tracking-wider text-blue-400">
+          Hypothetical Return
+        </span>
+        <h2 className="mt-4 mb-6 text-3xl font-bold md:text-4xl">
+          Illustrative Daily Return Structures
+        </h2>
+        <p className="mx-auto max-w-2xl text-slate-400">
+          The structures below illustrate how different contribution models could
+          work. Each rate is a hypothetical daily figure shown for illustration
+          only — not a real financial product.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+        {returnOptions.map((option, index) => (
+          <motion.div
+            key={option.title}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1 }}
+            viewport={{ once: true }}
+            className="group overflow-hidden rounded-2xl bg-slate-800 card-gradient card-hover"
+          >
+            <div className="relative overflow-hidden">
+              <img
+                src={option.image}
+                alt={option.alt}
+                className="h-48 w-full object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/30 to-transparent" />
+              <span className="absolute left-4 top-4 rounded-md bg-slate-900/80 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-blue-400 backdrop-blur">
+                {option.tag}
+              </span>
+            </div>
+
+            <div className="p-6">
+              <div className="mb-4 flex items-baseline gap-2">
+                <span className="text-4xl font-bold gradient-text">
+                  {option.rate}
+                </span>
+                <span className="text-sm font-semibold uppercase tracking-wider text-slate-400">
+                  daily
+                </span>
+              </div>
+              <h3 className="mb-3 text-lg font-bold text-white">
+                {option.title}
+              </h3>
+              <p className="text-sm leading-relaxed text-slate-400">
+                {option.description}
+              </p>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+
+      <p className="mx-auto mt-10 max-w-3xl text-center text-xs leading-relaxed text-slate-500">
+        All percentage figures are hypothetical daily return illustrations only. They
+        are not guaranteed, not typical, and do not represent Tesla stock performance,
+        real estate performance, or any real financial product. Actual investment
+        outcomes will vary and may result in loss of principal.
+      </p>
     </div>
   </section>
 );
@@ -683,7 +769,6 @@ const TeslaInnovation = () => (
         </p>
       </div>
 
-      {/* Elon Musk + pillars */}
       <div className="mb-16 grid grid-cols-1 gap-8 lg:grid-cols-5">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -730,7 +815,6 @@ const TeslaInnovation = () => (
         </motion.div>
       </div>
 
-      {/* Small product / infrastructure cards */}
       <div className="mb-10 grid grid-cols-1 gap-6 sm:grid-cols-3">
         {productCards.map((card, index) => (
           <motion.div
@@ -837,110 +921,6 @@ const InvestmentPlans = () => (
         ROI and bonus values are platform investment-plan parameters shown for
         illustration only. They are not guaranteed and do not represent Tesla stock
         performance.
-      </p>
-    </div>
-  </section>
-);
-
-/* ------------------------------------------------------------------ */
-/*  Hypothetical Return Structures (NEW)                               */
-/* ------------------------------------------------------------------ */
-const returnOptions = [
-  {
-    rate: '15%',
-    title: 'Fund Performance Returns',
-    description:
-      "Investor contributes money and receives a return based on the fund's performance.",
-    image: IMAGES.charging,
-    alt: 'Charging infrastructure',
-    tag: 'Fund Model',
-  },
-  {
-    rate: '8%',
-    title: 'Tesla Vehicle Redemption',
-    description:
-      'Money is invested for a set period, then the accumulated amount can be used toward purchasing a Tesla.',
-    image: IMAGES.heroVehicle,
-    alt: 'Tesla electric vehicle',
-    tag: 'Vehicle Model',
-  },
-  {
-    rate: '12%',
-    title: 'Tesla Location Profit Share',
-    description:
-      'Investor contributes toward a hypothetical Tesla location and receives a share of its profits.',
-    image: IMAGES.cybertruck,
-    alt: 'Tesla Cybertruck',
-    tag: 'Location Model',
-  },
-];
-
-const HypotheticalReturns = () => (
-  <section id="returns" className="py-20">
-    <div className="container mx-auto px-4">
-      <div className="mb-16 text-center">
-        <span className="text-sm font-bold uppercase tracking-wider text-blue-400">
-          Hypothetical Return
-        </span>
-        <h2 className="mt-4 mb-6 text-3xl font-bold md:text-4xl">
-          Illustrative Daily Return Structures
-        </h2>
-        <p className="mx-auto max-w-2xl text-slate-400">
-          The structures below illustrate how different contribution models could
-          work. Each rate is a hypothetical daily figure shown for illustration
-          only — not a real financial product.
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-        {returnOptions.map((option, index) => (
-          <motion.div
-            key={option.title}
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
-            viewport={{ once: true }}
-            className="group overflow-hidden rounded-2xl bg-slate-800 card-gradient card-hover"
-          >
-            {/* Image */}
-            <div className="relative overflow-hidden">
-              <img
-                src={option.image}
-                alt={option.alt}
-                className="h-48 w-full object-cover transition-transform duration-500 group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/30 to-transparent" />
-              <span className="absolute left-4 top-4 rounded-md bg-slate-900/80 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-blue-400 backdrop-blur">
-                {option.tag}
-              </span>
-            </div>
-
-            {/* Body */}
-            <div className="p-6">
-              <div className="mb-4 flex items-baseline gap-2">
-                <span className="text-4xl font-bold gradient-text">
-                  {option.rate}
-                </span>
-                <span className="text-sm font-semibold uppercase tracking-wider text-slate-400">
-                  daily
-                </span>
-              </div>
-              <h3 className="mb-3 text-lg font-bold text-white">
-                {option.title}
-              </h3>
-              <p className="text-sm leading-relaxed text-slate-400">
-                {option.description}
-              </p>
-            </div>
-          </motion.div>
-        ))}
-      </div>
-
-      <p className="mx-auto mt-10 max-w-3xl text-center text-xs leading-relaxed text-slate-500">
-        All percentage figures are hypothetical daily return illustrations only. They
-        are not guaranteed, not typical, and do not represent Tesla stock performance,
-        real estate performance, or any real financial product. Actual investment
-        outcomes will vary and may result in loss of principal.
       </p>
     </div>
   </section>
@@ -1211,12 +1191,12 @@ function Home() {
       <NavbarHome />
       <Hero />
       <TeslaRewards />
+      <HypotheticalReturns />
       <TradingWidget />
       <Stats />
       <Features />
       <TeslaInnovation />
       <InvestmentPlans />
-      <HypotheticalReturns />
       <Services />
       <CTA />
       <Footer />
@@ -1224,4 +1204,4 @@ function Home() {
   );
 }
 
-export default Home;s
+export default Home;
